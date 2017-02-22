@@ -172,3 +172,33 @@ candlestick_ohlc(price_fig, ten_days.values, width=5)
 volume_fig.fill_between(stock_volume.index.map(mdates.date2num), stock_volume.values, 0)
 
 plt.show()
+
+
+#Histogram
+
+# creating new variable with data frame data structure
+data = pd.DataFrame()
+
+# defining start and end dates
+start = date(2016, 1, 1)
+end = date.today()
+
+# using for loop to get historic prices for stocks
+for ticker in symbols:
+    data[ticker] = web.DataReader(ticker, 'yahoo', start, end)["Adj Close"]
+
+# checking data
+print(data.tail())
+
+#We use 100 as a starting value
+#Using ix as a primarily label-location based indexer
+# (data/data.ix[0] * 100).plot()
+# plt.show()
+
+#Calculating log returns
+log_returns = np.log(data/data.shift(1))
+print(log_returns.tail())
+
+# plotting histograms for log returns
+log_returns.hist(bins=50)
+plt.show()
