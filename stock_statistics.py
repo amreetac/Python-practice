@@ -136,3 +136,39 @@ plt.xlabel('Expected volatility')
 plt.ylabel('Expected return')
 plt.colorbar(label="Sharpe ratio")
 plt.show()
+
+#Resampling
+
+# creating object stock_price
+stock_price = web.DataReader("TWTR", "yahoo", start, end)
+# resampling data to 10days period
+ten_days = stock_price['Adj Close'].resample('10D').ohlc()
+stock_volume = stock_price['Volume'].resample('10D').sum()
+stock_volume.tail()
+# resetting index for OHLC
+ten_days.reset_index(inplace=True)
+
+# have to create new datetime objects for matplotlib
+ten_days["Date"] = ten_days["Date"].map(mdates.date2num)
+
+#Make sure to have the proper libraries
+
+import pandas as pd 
+import pandas_datareader.data as web
+import matplotlib.pyplot as plt 
+from matplotlib.finance import candlestick_ohlc
+import matplotlib.dates as mdates
+
+# resetting index for OHLC
+ten_days.reset_index(inplace=True)
+# have to create new datetime objects for matplotlib
+ten_days["Date"] = ten_days["Date"].map(mdates.date2num)
+# creating two ficures
+price_fig = plt.subplot2grid((6,1),(0,0), rowspan=5, colspan=1)
+volume_fig = plt.subplot2grid((6,1),(5,0), rowspan=1, colspan=1, sharex=price_fig)
+# plotting data
+price_fig.xaxis_date()
+candlestick_ohlc(price_fig, ten_days.values, width=5)
+volume_fig.fill_between(stock_volume.index.map(mdates.date2num), stock_volume.values, 0)
+
+plt.show()
